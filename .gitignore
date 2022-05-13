@@ -29,7 +29,7 @@
 .packages
 .pub-cache/
 .pub/
-/build/*
+/build/
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -44,6 +44,3 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-
-# webのビルド後はGitHubPagesで公開したいのでgit管理にする
-!/build/Web/
