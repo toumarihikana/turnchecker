@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'cardCheckModel.dart';
+import 'card_check_model.dart';
 
 class CheckListPage extends StatefulWidget {
   const CheckListPage({Key? key}) : super(key: key);

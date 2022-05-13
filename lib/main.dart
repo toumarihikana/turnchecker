@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'checkListPage.dart';
+import 'check_list_page.dart';
 
 void main() {
   setUrlStrategy(PathUrlStrategy());
