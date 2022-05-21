@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_function_literals_in_foreach_calls
+
 import 'package:flutter/material.dart';
 import 'card_check_model.dart';
 
@@ -110,6 +112,7 @@ class _CheckListPageState extends State<CheckListPage> {
               ],
             ),
           ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               // Add your onPressed code here!
@@ -117,6 +120,59 @@ class _CheckListPageState extends State<CheckListPage> {
             backgroundColor: Colors.green,
             mini: true,
             child: const Icon(Icons.add),
+          ),
+          bottomNavigationBar: BottomAppBar(
+            color: Theme.of(context).primaryColor,
+            notchMargin: 6.0,
+            shape: const AutomaticNotchedShape(
+              RoundedRectangleBorder(),
+              StadiumBorder(
+                side: BorderSide(),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(5, 2, 30, 2),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  IconButton(
+                    icon: const Icon(
+                      Icons.folder_open_outlined,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {},
+                  ),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 170,
+                    ),
+                    child: const Text.rich(
+                      TextSpan(
+                        text: '12345678901234567890',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.save,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.save_as,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
