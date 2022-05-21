@@ -4,6 +4,7 @@ import 'check_list_page.dart';
 
 void main() {
   setUrlStrategy(PathUrlStrategy());
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 

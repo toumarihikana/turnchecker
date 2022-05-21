@@ -1,3 +1,5 @@
+import 'save_check_list_model.dart';
+
 class CardCheckModel {
   int id;
   String cardName;
@@ -17,5 +19,22 @@ class CardCheckModel {
       CardCheckModel(id: 7, cardName: '黄金の雫の神碑', isCheck: false),
       CardCheckModel(id: 8, cardName: '怒れる嵐の神碑', isCheck: false),
     ];
+  }
+
+  static Set<String> toMap(List<CardCheckModel> item) {
+    String cards = '';
+    for (var element in item) {
+      cards += "'${element.cardName}',";
+    }
+    return {"cards:[$cards]"};
+  }
+
+  static Profile toProfile(String profileName, List<CardCheckModel> item) {
+    List<String> cardstNameList = [];
+    for (var element in item) {
+      cardstNameList.add(element.cardName);
+    }
+
+    return Profile(name: profileName, cards: cardstNameList);
   }
 }

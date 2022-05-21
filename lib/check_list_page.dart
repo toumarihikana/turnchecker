@@ -1,7 +1,15 @@
 // ignore_for_file: avoid_function_literals_in_foreach_calls
 
+import 'dart:convert';
+import 'dart:html';
+
 import 'package:flutter/material.dart';
+import 'package:localstore/localstore.dart';
+
 import 'card_check_model.dart';
+import 'save_check_list_model.dart';
+import 'text_edit_dialog.dart';
+import 'text_only_dialog.dart';
 
 class CheckListPage extends StatefulWidget {
   const CheckListPage({Key? key}) : super(key: key);
@@ -141,7 +149,17 @@ class _CheckListPageState extends State<CheckListPage> {
                       Icons.folder_open_outlined,
                       color: Colors.white,
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      final db = Localstore.instance;
+                      final id = await db.collection('checklists').get();
+                      var a = "te";
+                      if (id != null) {
+                        if (id['profiles'] != null) {
+                          var res = SaveCheckListModel.fromJson(id['profiles']);
+                          await showTextDialog(context, res.profiles![0].name!);
+                        }
+                      }
+                    },
                   ),
                   ConstrainedBox(
                     constraints: const BoxConstraints(
@@ -168,7 +186,11 @@ class _CheckListPageState extends State<CheckListPage> {
                       Icons.save_as,
                       color: Colors.white,
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      final profileName =
+                          await showEditDialog(context, "プロファイル名");
+                      saveAsItem(myCheckBoxModelList, profileName!);
+                    },
                   ),
                 ],
               ),
@@ -198,5 +220,45 @@ class _CheckListPageState extends State<CheckListPage> {
         element.isCheck = false;
       });
     });
+  }
+
+  static Future<String?> showEditDialog(
+      BuildContext context, String profileName) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return TextEditDialog(text: profileName);
+        });
+  }
+
+  static Future<String?> showTextDialog(
+      BuildContext context, String text) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return TextOnlyDialog(text: text);
+        });
+  }
+
+  Future<void> saveAsItem(List<CardCheckModel> items, String name) async {
+    final db = Localstore.instance;
+    final id = await db.collection('checklists').get();
+    SaveCheckListModel saved = SaveCheckListModel();
+    if (id != null) {
+      if (id['profiles'] != null) {
+        saved = SaveCheckListModel.fromJson(id['profiles']);
+      }
+    }
+    var nowList = CardCheckModel.toProfile(name, items);
+    if (saved.profiles != null) {
+      saved.profiles!.add(nowList);
+    } else {
+      saved.profiles = <Profile>[];
+      saved.profiles!.add(nowList);
+    }
+
+    var result = saved.toJson();
+
+    db.collection('checklists').doc('profiles').set(result);
   }
 }
