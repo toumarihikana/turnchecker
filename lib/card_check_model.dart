@@ -1,12 +1,14 @@
 import 'save_check_list_model.dart';
 
-class CardCheckModel {
-  int id;
-  String cardName;
-  bool isCheck;
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'card_check_model.freezed.dart';
 
-  CardCheckModel(
-      {required this.id, required this.cardName, required this.isCheck});
+@freezed
+class CardCheckModel with _$CardCheckModel {
+  factory CardCheckModel(
+      {required int id,
+      required String cardName,
+      required bool isCheck}) = _CardCheckModelList;
 
   static List<CardCheckModel> getUsers() {
     return <CardCheckModel>[

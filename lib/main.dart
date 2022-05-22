@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'check_list_page.dart';
+import 'package:localstore/localstore.dart';
 
 void main() {
   setUrlStrategy(PathUrlStrategy());
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

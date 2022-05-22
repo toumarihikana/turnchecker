@@ -1,17 +1,74 @@
 // ignore_for_file: avoid_function_literals_in_foreach_calls
 
-import 'dart:convert';
-import 'dart:html';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:localstore/localstore.dart';
+import 'package:flutter/foundation.dart';
 
 import 'card_check_model.dart';
+import 'floatingButtonWidgetBuild.dart';
 import 'save_check_list_model.dart';
 import 'text_edit_dialog.dart';
 import 'text_only_dialog.dart';
 
-class CheckListPage extends StatefulWidget {
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'check_list_page.freezed.dart';
+
+@freezed
+class CardCheckModelList with _$CardCheckModelList {
+  factory CardCheckModelList({List<CardCheckModel>? models}) =
+      _CardCheckModelList;
+}
+
+abstract class AbstractCheckBoxModelListNotifier
+    extends StateNotifier<List<CardCheckModel>> {
+  AbstractCheckBoxModelListNotifier(List<CardCheckModel> list) : super(list);
+  addItem(CardCheckModel item) {
+    state = [...state, item];
+  }
+
+  removeItem(int id) {
+    state = [
+      for (final item in state)
+        if (item.id != id) item,
+    ];
+  }
+
+  toggle(int id) {
+    state = [
+      for (final item in state)
+        if (item.id == id) item.copyWith(isCheck: !item.isCheck) else item,
+    ];
+  }
+
+  allOff() {
+    state = [
+      for (final item in state) item.copyWith(isCheck: false),
+    ];
+  }
+}
+
+class MyCheckBoxModelListNotifier extends AbstractCheckBoxModelListNotifier {
+  MyCheckBoxModelListNotifier() : super(CardCheckModel.getUsers());
+}
+
+final myCheckBoxModelListProvider =
+    StateNotifierProvider<MyCheckBoxModelListNotifier, List<CardCheckModel>>(
+        ((ref) {
+  return MyCheckBoxModelListNotifier();
+}));
+
+class OpponentCheckBoxModelListNotifier
+    extends AbstractCheckBoxModelListNotifier {
+  OpponentCheckBoxModelListNotifier() : super(CardCheckModel.getUsers());
+}
+
+final opponentCheckBoxModelListProvider = StateNotifierProvider<
+    OpponentCheckBoxModelListNotifier, List<CardCheckModel>>(((ref) {
+  return OpponentCheckBoxModelListNotifier();
+}));
+
+class CheckListPage extends ConsumerStatefulWidget {
   const CheckListPage({Key? key}) : super(key: key);
 
   final String title = 'Checklist for card activation';
@@ -20,13 +77,13 @@ class CheckListPage extends StatefulWidget {
   _CheckListPageState createState() => _CheckListPageState();
 }
 
-class _CheckListPageState extends State<CheckListPage> {
-  List<CardCheckModel> myCheckBoxModelList = CardCheckModel.getUsers();
-
-  List<CardCheckModel> opponentCheckBoxModelList = CardCheckModel.getUsers();
-
+class _CheckListPageState extends ConsumerState<CheckListPage> {
   @override
   Widget build(BuildContext context) {
+    List<CardCheckModel> myCheckBoxModelList =
+        ref.watch(myCheckBoxModelListProvider);
+    List<CardCheckModel> opponentCheckBoxModelList =
+        ref.watch(opponentCheckBoxModelListProvider);
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
     final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
@@ -64,7 +121,8 @@ class _CheckListPageState extends State<CheckListPage> {
                         dense: true,
                         controlAffinity: ListTileControlAffinity.leading,
                         onChanged: (bool? val) {
-                          itemChange(myCheckBoxModelList, val!, index);
+                          itemChange(myCheckBoxModelListProvider.notifier,
+                              myCheckBoxModelList[index].id);
                         },
                         key: Key('$index'),
                         tileColor: index.isOdd ? oddItemColor : evenItemColor,
@@ -77,7 +135,7 @@ class _CheckListPageState extends State<CheckListPage> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        resetCheckBox(myCheckBoxModelList);
+                        resetCheckBox(myCheckBoxModelListProvider.notifier);
                       },
                       child: const Text(
                         'Reset',
@@ -95,7 +153,8 @@ class _CheckListPageState extends State<CheckListPage> {
                         dense: true,
                         controlAffinity: ListTileControlAffinity.leading,
                         onChanged: (bool? val) {
-                          itemChange(opponentCheckBoxModelList, val!, index);
+                          itemChange(opponentCheckBoxModelListProvider.notifier,
+                              opponentCheckBoxModelList[index].id);
                         },
                         key: Key('$index'),
                         tileColor: index.isOdd ? oddItemColor : evenItemColor,
@@ -109,7 +168,8 @@ class _CheckListPageState extends State<CheckListPage> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        resetCheckBox(opponentCheckBoxModelList);
+                        resetCheckBox(
+                            opponentCheckBoxModelListProvider.notifier);
                       },
                       child: const Text(
                         'Reset',
@@ -121,14 +181,7 @@ class _CheckListPageState extends State<CheckListPage> {
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              // Add your onPressed code here!
-            },
-            backgroundColor: Colors.green,
-            mini: true,
-            child: const Icon(Icons.add),
-          ),
+          floatingActionButton: floatingButtonBuild(),
           bottomNavigationBar: BottomAppBar(
             color: Theme.of(context).primaryColor,
             notchMargin: 6.0,
@@ -156,7 +209,8 @@ class _CheckListPageState extends State<CheckListPage> {
                       if (id != null) {
                         if (id['profiles'] != null) {
                           var res = SaveCheckListModel.fromJson(id['profiles']);
-                          await showTextDialog(context, res.profiles![0].name!);
+                          await showTextDialog(context,
+                              res.profiles![res.profiles!.length - 1].name!);
                         }
                       }
                     },
@@ -187,8 +241,8 @@ class _CheckListPageState extends State<CheckListPage> {
                       color: Colors.white,
                     ),
                     onPressed: () async {
-                      final profileName =
-                          await showEditDialog(context, "プロファイル名");
+                      final profileName = await showEditDialog(
+                          context, "プロファイル名", (context, profileName) {});
                       saveAsItem(myCheckBoxModelList, profileName!);
                     },
                   ),
@@ -201,6 +255,12 @@ class _CheckListPageState extends State<CheckListPage> {
     );
   }
 
+  Widget floatingButtonBuild() {
+    return const FloatingButtonWidgetBuild(
+      text: '',
+    );
+  }
+
   void _onReorder(List<CardCheckModel> items, int oldIndex, int newIndex) {
     if (oldIndex < newIndex) {
       newIndex -= 1;
@@ -208,26 +268,23 @@ class _CheckListPageState extends State<CheckListPage> {
     items.insert(newIndex, items.removeAt(oldIndex));
   }
 
-  void itemChange(List<CardCheckModel> items, bool val, int index) {
-    setState(() {
-      items[index].isCheck = val;
-    });
+  void itemChange(
+      AlwaysAliveProviderBase<AbstractCheckBoxModelListNotifier> notifier,
+      int index) {
+    ref.read(notifier).toggle(index);
   }
 
-  void resetCheckBox(List<CardCheckModel> items) {
-    setState(() {
-      items.forEach((element) {
-        element.isCheck = false;
-      });
-    });
+  void resetCheckBox(
+      AlwaysAliveProviderBase<AbstractCheckBoxModelListNotifier> notifier) {
+    ref.read(notifier).allOff();
   }
 
-  static Future<String?> showEditDialog(
-      BuildContext context, String profileName) async {
+  static Future<String?> showEditDialog(BuildContext context,
+      String profileName, Function(BuildContext, String)? onSuccess) async {
     return showDialog(
         context: context,
         builder: (context) {
-          return TextEditDialog(text: profileName);
+          return TextEditDialog(text: profileName, callback: onSuccess);
         });
   }
 

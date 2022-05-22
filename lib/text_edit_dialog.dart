@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
 class TextEditDialog extends StatefulWidget {
-  const TextEditDialog({Key? key, required this.text}) : super(key: key);
+  const TextEditDialog({
+    Key? key,
+    required this.text,
+    this.callback,
+  }) : super(key: key);
   final String text;
+  final Function(BuildContext, String)? callback;
 
   @override
   State<StatefulWidget> createState() => _TextEditDialog();
@@ -47,6 +52,9 @@ class _TextEditDialog extends State<TextEditDialog> {
       actions: [
         TextButton(
             onPressed: () {
+              if (widget.callback != null) {
+                widget.callback!(context, textEditingController.text);
+              }
               Navigator.of(context).pop(textEditingController.text);
             },
             child: const Text("決定"))
