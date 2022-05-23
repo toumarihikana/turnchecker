@@ -8,7 +8,8 @@ import 'text_edit_dialog.dart';
 class FloatingButtonWidgetBuild extends ConsumerWidget {
   final String text;
 
-  const FloatingButtonWidgetBuild({required this.text});
+  const FloatingButtonWidgetBuild({Key? key, required this.text})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

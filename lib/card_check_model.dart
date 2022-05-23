@@ -23,6 +23,14 @@ class CardCheckModel with _$CardCheckModel {
     ];
   }
 
+  static List<CardCheckModel> fromStringList(List<String> cardNames) {
+    List<CardCheckModel> result = [];
+    cardNames.asMap().forEach((index, value) {
+      result.add(CardCheckModel(id: index, cardName: value, isCheck: false));
+    });
+    return result;
+  }
+
   static Set<String> toMap(List<CardCheckModel> item) {
     String cards = '';
     for (var element in item) {
