@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:localstore/localstore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:ulid/ulid.dart';
 
 import 'card_check_model.dart';
 import 'floating_button_widget_build.dart';
@@ -13,6 +14,8 @@ import 'text_edit_dialog.dart';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 part 'check_list_page.freezed.dart';
+
+const String dbCollectionNameChecklists = 'checklists';
 
 @freezed
 class CardCheckModelList with _$CardCheckModelList {
@@ -82,7 +85,7 @@ class SavedProfilesCountNotifier extends StateNotifier<AsyncValue<int>> {
     try {
       state = const AsyncValue.data(0);
       final db = Localstore.instance;
-      final id = await db.collection('checklists').get();
+      final id = await db.collection(dbCollectionNameChecklists).get();
       if (id != null) {
         if (id['profiles'] != null) {
           var res = SaveCheckListModel.fromJson(id['profiles']);
@@ -301,7 +304,8 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
                     ),
                     onPressed: () async {
                       final db = Localstore.instance;
-                      final id = await db.collection('checklists').get();
+                      final id =
+                          await db.collection(dbCollectionNameChecklists).get();
                       if (id != null) {
                         if (id['profiles'] != null) {
                           var res = SaveCheckListModel.fromJson(id['profiles']);
@@ -332,7 +336,9 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
                       Icons.save,
                       color: Colors.white,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      // saveItem();
+                    },
                   ),
                   IconButton(
                     icon: const Icon(
@@ -342,7 +348,14 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
                     onPressed: () async {
                       final profileName = await showEditDialog(
                           context, "プロファイル名", (context, profileName) {});
-                      saveAsItem(myCheckBoxModelList, profileName!);
+                      StateNotifierProvider<AbstractCheckBoxModelListNotifier,
+                          List<CardCheckModel>> provider;
+                      if (DefaultTabController.of(context)!.index == 1) {
+                        provider = opponentCheckBoxModelListProvider;
+                      } else {
+                        provider = myCheckBoxModelListProvider;
+                      }
+                      saveAsItem(provider, profileName!);
                     },
                   ),
                 ],
@@ -380,7 +393,7 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
 
   Future<void> deleteSavedProfile(int index) async {
     final db = Localstore.instance;
-    final id = await db.collection('checklists').get();
+    final id = await db.collection(dbCollectionNameChecklists).get();
     if (id != null) {
       if (id['profiles'] != null) {
         var res = SaveCheckListModel.fromJson(id['profiles']);
@@ -388,7 +401,7 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
         res.profiles!.removeAt(index);
         var result = res.toJson();
 
-        db.collection('checklists').doc('profiles').set(result);
+        db.collection(dbCollectionNameChecklists).doc('profiles').set(result);
 
         ref.read(savedProfilesCountNotifierProvider.notifier).decrement();
       }
@@ -413,16 +426,22 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
         });
   }
 
-  Future<void> saveAsItem(List<CardCheckModel> items, String name) async {
+  Future<void> saveAsItem(
+      StateNotifierProvider<AbstractCheckBoxModelListNotifier,
+              List<CardCheckModel>>
+          provider,
+      String name) async {
     final db = Localstore.instance;
-    final id = await db.collection('checklists').get();
+    final id = await db.collection(dbCollectionNameChecklists).get();
     SaveCheckListModel saved = SaveCheckListModel();
     if (id != null) {
       if (id['profiles'] != null) {
         saved = SaveCheckListModel.fromJson(id['profiles']);
       }
     }
-    var nowList = CardCheckModel.toProfile(name, items);
+    List<CardCheckModel> cardList = ref.watch(provider);
+    var ulid = Ulid();
+    var nowList = CardCheckModel.toProfile(name, cardList, ulid.toString());
     if (saved.profiles != null) {
       saved.profiles!.add(nowList);
     } else {
@@ -432,8 +451,34 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
 
     var result = saved.toJson();
 
-    db.collection('checklists').doc('profiles').set(result);
+    db.collection(dbCollectionNameChecklists).doc('profiles').set(result);
 
     ref.read(savedProfilesCountNotifierProvider.notifier).increment();
+  }
+
+  Future<void> saveItem(List<CardCheckModel> items, String ulid) async {
+    final db = Localstore.instance;
+    final id = await db.collection(dbCollectionNameChecklists).get();
+    SaveCheckListModel saved = SaveCheckListModel();
+    if (id != null && id['profiles'] != null) {
+      saved = SaveCheckListModel.fromJson(id['profiles']);
+
+      var nowList = CardCheckModel.toProfile('name', items, ulid);
+      if (saved.profiles != null) {
+        var existProfiles =
+            saved.profiles!.firstWhere((element) => element.ulid == ulid);
+
+        var i = saved.profiles!.indexOf(existProfiles);
+        // existProfiles.cards = nowList.cards;
+
+        saved.profiles![i].cards = nowList.cards;
+      }
+
+      var result = saved.toJson();
+
+      db.collection(dbCollectionNameChecklists).doc('profiles').set(result);
+    } else {
+      // 上書き保存の処理なのでprofilesが存在しないのはおかしい
+    }
   }
 }

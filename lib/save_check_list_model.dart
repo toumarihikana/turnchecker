@@ -1,3 +1,5 @@
+import 'package:ulid/ulid.dart';
+
 class SaveCheckListModel {
   List<Profile>? profiles;
 
@@ -24,18 +26,21 @@ class SaveCheckListModel {
 class Profile {
   String? name;
   List<String>? cards;
+  String ulid = Ulid().toString();
 
-  Profile({this.name, this.cards});
+  Profile({this.name, this.cards, required this.ulid});
 
   Profile.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     cards = json['cards'].cast<String>();
+    ulid = json['ulid'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['name'] = name;
     data['cards'] = cards;
+    data['ulid'] = ulid;
     return data;
   }
 }

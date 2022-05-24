@@ -39,12 +39,13 @@ class CardCheckModel with _$CardCheckModel {
     return {"cards:[$cards]"};
   }
 
-  static Profile toProfile(String profileName, List<CardCheckModel> item) {
+  static Profile toProfile(
+      String profileName, List<CardCheckModel> item, String ulid) {
     List<String> cardstNameList = [];
     for (var element in item) {
       cardstNameList.add(element.cardName);
     }
 
-    return Profile(name: profileName, cards: cardstNameList);
+    return Profile(name: profileName, cards: cardstNameList, ulid: ulid);
   }
 }
