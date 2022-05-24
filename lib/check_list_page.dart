@@ -224,211 +224,221 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
     ];
 
     return MaterialApp(
+        title: "TurnChecker",
         home: DefaultTabController(
-      length: _tab.length,
-      child: Builder(builder: (BuildContext context) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Checklist for card activation'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.arrow_forward),
-                onPressed: () {},
-              )
-            ],
-            bottom: TabBar(
-              tabs: _tab,
-              onTap: (tabIndex) {
-                if (tabIndex == 1) {
-                  ref
-                      .read(viewNowProfileNameProvider.notifier)
-                      .changeProfileName(opponentProfileName);
-
-                  ref
-                      .read(viewNowProfileUlidProvider.notifier)
-                      .changeUlid(opponentProfileUlid);
-                } else {
-                  ref
-                      .read(viewNowProfileNameProvider.notifier)
-                      .changeProfileName(myProfileName);
-                  ref
-                      .read(viewNowProfileUlidProvider.notifier)
-                      .changeUlid(myProfileUlid);
-                }
-              },
-            ),
-          ),
-          body: SafeArea(
-            child: TabBarView(
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    ReorderableListView.builder(
-                      shrinkWrap: true,
-                      itemBuilder: (_, index) => CheckboxListTile(
-                        value: myCheckBoxModelList[index].isCheck,
-                        dense: true,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        onChanged: (bool? val) {
-                          itemChange(myCheckBoxModelListProvider.notifier,
-                              myCheckBoxModelList[index].id);
-                        },
-                        key: Key('$index' 'main'),
-                        tileColor: index.isOdd ? oddItemColor : evenItemColor,
-                        title: Text(myCheckBoxModelList[index].cardName),
-                      ),
-                      itemCount: myCheckBoxModelList.length,
-                      onReorder: (int oldIndex, int newIndex) {
-                        _onReorder(myCheckBoxModelList, oldIndex, newIndex);
-                      },
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        resetCheckBox(myCheckBoxModelListProvider.notifier);
-                      },
-                      child: const Text(
-                        'Reset',
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    ReorderableListView.builder(
-                      shrinkWrap: true,
-                      itemBuilder: (_, index) => CheckboxListTile(
-                        value: opponentCheckBoxModelList[index].isCheck,
-                        dense: true,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        onChanged: (bool? val) {
-                          itemChange(opponentCheckBoxModelListProvider.notifier,
-                              opponentCheckBoxModelList[index].id);
-                        },
-                        key: Key('$index'),
-                        tileColor: index.isOdd ? oddItemColor : evenItemColor,
-                        title: Text(opponentCheckBoxModelList[index].cardName),
-                      ),
-                      itemCount: opponentCheckBoxModelList.length,
-                      onReorder: (int oldIndex, int newIndex) {
-                        _onReorder(
-                            opponentCheckBoxModelList, oldIndex, newIndex);
-                      },
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        resetCheckBox(
-                            opponentCheckBoxModelListProvider.notifier);
-                      },
-                      child: const Text(
-                        'Reset',
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-          floatingActionButton: floatingButtonBuild(),
-          bottomNavigationBar: BottomAppBar(
-            color: Theme.of(context).primaryColor,
-            notchMargin: 6.0,
-            shape: const AutomaticNotchedShape(
-              RoundedRectangleBorder(),
-              StadiumBorder(
-                side: BorderSide(),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(5, 2, 30, 2),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
+          length: _tab.length,
+          child: Builder(builder: (BuildContext context) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Checklist for card activation'),
+                actions: [
                   IconButton(
-                    icon: const Icon(
-                      Icons.folder_open_outlined,
-                      color: Colors.white,
-                    ),
-                    onPressed: () async {
-                      final db = Localstore.instance;
-                      final id =
-                          await db.collection(dbCollectionNameChecklists).get();
-                      if (id != null) {
-                        if (id['profiles'] != null) {
-                          var res = SaveCheckListModel.fromJson(id['profiles']);
-                          if (!mounted) return;
-                          int tabIndex =
-                              DefaultTabController.of(context)?.index ?? 0;
-                          await showTextDialog(
-                              context, res.profiles!, tabIndex);
-                        }
-                      }
-                    },
-                  ),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 170,
-                    ),
-                    child: Text.rich(
-                      TextSpan(
-                        text: nowProfileName,
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.save,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      StateNotifierProvider<AbstractCheckBoxModelListNotifier,
-                          List<CardCheckModel>> provider;
-                      if (DefaultTabController.of(context)!.index == 1) {
-                        provider = opponentCheckBoxModelListProvider;
-                      } else {
-                        provider = myCheckBoxModelListProvider;
-                      }
-                      saveItem(provider, nowProfileUlid);
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.save_as,
-                      color: Colors.white,
-                    ),
-                    onPressed: () async {
-                      final profileName = await showEditDialog(
-                          context, "プロファイル名", (context, profileName) {});
-                      StateNotifierProvider<AbstractCheckBoxModelListNotifier,
-                          List<CardCheckModel>> provider;
-                      if (DefaultTabController.of(context)!.index == 1) {
-                        provider = opponentCheckBoxModelListProvider;
-                      } else {
-                        provider = myCheckBoxModelListProvider;
-                      }
-                      saveAsItem(provider, profileName!);
-
+                    icon: const Icon(Icons.arrow_forward),
+                    onPressed: () {},
+                  )
+                ],
+                bottom: TabBar(
+                  tabs: _tab,
+                  onTap: (tabIndex) {
+                    if (tabIndex == 1) {
                       ref
                           .read(viewNowProfileNameProvider.notifier)
-                          .changeProfileName(profileName);
+                          .changeProfileName(opponentProfileName);
+
                       ref
                           .read(viewNowProfileUlidProvider.notifier)
-                          .changeUlid(profileName);
-                    },
-                  ),
-                ],
+                          .changeUlid(opponentProfileUlid);
+                    } else {
+                      ref
+                          .read(viewNowProfileNameProvider.notifier)
+                          .changeProfileName(myProfileName);
+                      ref
+                          .read(viewNowProfileUlidProvider.notifier)
+                          .changeUlid(myProfileUlid);
+                    }
+                  },
+                ),
               ),
-            ),
-          ),
-        );
-      }),
-    ));
+              body: SafeArea(
+                child: TabBarView(
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        ReorderableListView.builder(
+                          shrinkWrap: true,
+                          itemBuilder: (_, index) => CheckboxListTile(
+                            value: myCheckBoxModelList[index].isCheck,
+                            dense: true,
+                            controlAffinity: ListTileControlAffinity.leading,
+                            onChanged: (bool? val) {
+                              itemChange(myCheckBoxModelListProvider.notifier,
+                                  myCheckBoxModelList[index].id);
+                            },
+                            key: Key('$index' 'main'),
+                            tileColor:
+                                index.isOdd ? oddItemColor : evenItemColor,
+                            title: Text(myCheckBoxModelList[index].cardName),
+                          ),
+                          itemCount: myCheckBoxModelList.length,
+                          onReorder: (int oldIndex, int newIndex) {
+                            _onReorder(myCheckBoxModelList, oldIndex, newIndex);
+                          },
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            resetCheckBox(myCheckBoxModelListProvider.notifier);
+                          },
+                          child: const Text(
+                            'Reset',
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        ReorderableListView.builder(
+                          shrinkWrap: true,
+                          itemBuilder: (_, index) => CheckboxListTile(
+                            value: opponentCheckBoxModelList[index].isCheck,
+                            dense: true,
+                            controlAffinity: ListTileControlAffinity.leading,
+                            onChanged: (bool? val) {
+                              itemChange(
+                                  opponentCheckBoxModelListProvider.notifier,
+                                  opponentCheckBoxModelList[index].id);
+                            },
+                            key: Key('$index'),
+                            tileColor:
+                                index.isOdd ? oddItemColor : evenItemColor,
+                            title:
+                                Text(opponentCheckBoxModelList[index].cardName),
+                          ),
+                          itemCount: opponentCheckBoxModelList.length,
+                          onReorder: (int oldIndex, int newIndex) {
+                            _onReorder(
+                                opponentCheckBoxModelList, oldIndex, newIndex);
+                          },
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            resetCheckBox(
+                                opponentCheckBoxModelListProvider.notifier);
+                          },
+                          child: const Text(
+                            'Reset',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.endDocked,
+              floatingActionButton: floatingButtonBuild(),
+              bottomNavigationBar: BottomAppBar(
+                color: Theme.of(context).primaryColor,
+                notchMargin: 6.0,
+                shape: const AutomaticNotchedShape(
+                  RoundedRectangleBorder(),
+                  StadiumBorder(
+                    side: BorderSide(),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 2, 30, 2),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      IconButton(
+                        icon: const Icon(
+                          Icons.folder_open_outlined,
+                          color: Colors.white,
+                        ),
+                        onPressed: () async {
+                          final db = Localstore.instance;
+                          final id = await db
+                              .collection(dbCollectionNameChecklists)
+                              .get();
+                          if (id != null) {
+                            if (id['profiles'] != null) {
+                              var res =
+                                  SaveCheckListModel.fromJson(id['profiles']);
+                              if (!mounted) return;
+                              int tabIndex =
+                                  DefaultTabController.of(context)?.index ?? 0;
+                              await showTextDialog(
+                                  context, res.profiles!, tabIndex);
+                            }
+                          }
+                        },
+                      ),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 170,
+                        ),
+                        child: Text.rich(
+                          TextSpan(
+                            text: nowProfileName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.save,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          StateNotifierProvider<
+                              AbstractCheckBoxModelListNotifier,
+                              List<CardCheckModel>> provider;
+                          if (DefaultTabController.of(context)!.index == 1) {
+                            provider = opponentCheckBoxModelListProvider;
+                          } else {
+                            provider = myCheckBoxModelListProvider;
+                          }
+                          saveItem(provider, nowProfileUlid);
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.save_as,
+                          color: Colors.white,
+                        ),
+                        onPressed: () async {
+                          final profileName = await showEditDialog(
+                              context, "プロファイル名", (context, profileName) {});
+                          StateNotifierProvider<
+                              AbstractCheckBoxModelListNotifier,
+                              List<CardCheckModel>> provider;
+                          if (DefaultTabController.of(context)!.index == 1) {
+                            provider = opponentCheckBoxModelListProvider;
+                          } else {
+                            provider = myCheckBoxModelListProvider;
+                          }
+                          saveAsItem(provider, profileName!);
+
+                          ref
+                              .read(viewNowProfileNameProvider.notifier)
+                              .changeProfileName(profileName);
+                          ref
+                              .read(viewNowProfileUlidProvider.notifier)
+                              .changeUlid(profileName);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+        ));
   }
 
   Widget floatingButtonBuild() {
