@@ -151,6 +151,45 @@ final opponentProfileNameProvider =
   return OpponentProfileNameNotifier('');
 }));
 
+class ViewNowProfileUlidNotifier extends StateNotifier<String> {
+  ViewNowProfileUlidNotifier(String ulid) : super(ulid);
+
+  changeUlid(String newName) {
+    state = newName;
+  }
+}
+
+final viewNowProfileUlidProvider =
+    StateNotifierProvider<ViewNowProfileUlidNotifier, String>(((ref) {
+  return ViewNowProfileUlidNotifier('');
+}));
+
+class MyProfileUlidNotifier extends StateNotifier<String> {
+  MyProfileUlidNotifier(String nowProfileUlid) : super(nowProfileUlid);
+
+  changeProfileUlid(String newUlid) {
+    state = newUlid;
+  }
+}
+
+final myProfileUlidProvider =
+    StateNotifierProvider<MyProfileUlidNotifier, String>(((ref) {
+  return MyProfileUlidNotifier('');
+}));
+
+class OpponentProfileUlidNotifier extends StateNotifier<String> {
+  OpponentProfileUlidNotifier(String nowProfileUlid) : super(nowProfileUlid);
+
+  changeProfileUlid(String newUlid) {
+    state = newUlid;
+  }
+}
+
+final opponentProfileUlidProvider =
+    StateNotifierProvider<OpponentProfileUlidNotifier, String>(((ref) {
+  return OpponentProfileUlidNotifier('');
+}));
+
 class CheckListPage extends ConsumerStatefulWidget {
   const CheckListPage({Key? key}) : super(key: key);
 
@@ -171,6 +210,10 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
     String nowProfileName = ref.watch(viewNowProfileNameProvider);
     String myProfileName = ref.watch(myProfileNameProvider);
     String opponentProfileName = ref.watch(opponentProfileNameProvider);
+
+    String nowProfileUlid = ref.watch(viewNowProfileUlidProvider);
+    String myProfileUlid = ref.watch(myProfileUlidProvider);
+    String opponentProfileUlid = ref.watch(opponentProfileUlidProvider);
 
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
@@ -200,10 +243,17 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
                   ref
                       .read(viewNowProfileNameProvider.notifier)
                       .changeProfileName(opponentProfileName);
+
+                  ref
+                      .read(viewNowProfileUlidProvider.notifier)
+                      .changeUlid(opponentProfileUlid);
                 } else {
                   ref
                       .read(viewNowProfileNameProvider.notifier)
                       .changeProfileName(myProfileName);
+                  ref
+                      .read(viewNowProfileUlidProvider.notifier)
+                      .changeUlid(myProfileUlid);
                 }
               },
             ),
@@ -337,7 +387,14 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      // saveItem();
+                      StateNotifierProvider<AbstractCheckBoxModelListNotifier,
+                          List<CardCheckModel>> provider;
+                      if (DefaultTabController.of(context)!.index == 1) {
+                        provider = opponentCheckBoxModelListProvider;
+                      } else {
+                        provider = myCheckBoxModelListProvider;
+                      }
+                      saveItem(provider, nowProfileUlid);
                     },
                   ),
                   IconButton(
@@ -356,6 +413,13 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
                         provider = myCheckBoxModelListProvider;
                       }
                       saveAsItem(provider, profileName!);
+
+                      ref
+                          .read(viewNowProfileNameProvider.notifier)
+                          .changeProfileName(profileName);
+                      ref
+                          .read(viewNowProfileUlidProvider.notifier)
+                          .changeUlid(profileName);
                     },
                   ),
                 ],
@@ -456,14 +520,20 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
     ref.read(savedProfilesCountNotifierProvider.notifier).increment();
   }
 
-  Future<void> saveItem(List<CardCheckModel> items, String ulid) async {
+  Future<void> saveItem(
+      StateNotifierProvider<AbstractCheckBoxModelListNotifier,
+              List<CardCheckModel>>
+          provider,
+      String ulid) async {
     final db = Localstore.instance;
     final id = await db.collection(dbCollectionNameChecklists).get();
     SaveCheckListModel saved = SaveCheckListModel();
     if (id != null && id['profiles'] != null) {
       saved = SaveCheckListModel.fromJson(id['profiles']);
 
-      var nowList = CardCheckModel.toProfile('name', items, ulid);
+      List<CardCheckModel> cardList = ref.watch(provider);
+
+      var nowList = CardCheckModel.toProfile('name', cardList, ulid);
       if (saved.profiles != null) {
         var existProfiles =
             saved.profiles!.firstWhere((element) => element.ulid == ulid);

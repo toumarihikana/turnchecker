@@ -74,6 +74,9 @@ class _ProfilesSelectDialogState extends ConsumerState<ProfilesSelectDialog> {
                                   ref
                                       .read(viewNowProfileNameProvider.notifier)
                                       .changeProfileName(select.name!);
+                                  ref
+                                      .read(viewNowProfileUlidProvider.notifier)
+                                      .changeUlid(select.ulid);
                                 }
                               }
                             } else {
@@ -96,6 +99,9 @@ class _ProfilesSelectDialogState extends ConsumerState<ProfilesSelectDialog> {
                                   ref
                                       .read(viewNowProfileNameProvider.notifier)
                                       .changeProfileName(select.name!);
+                                  ref
+                                      .read(viewNowProfileUlidProvider.notifier)
+                                      .changeUlid(select.ulid);
                                 }
                               }
                             }
