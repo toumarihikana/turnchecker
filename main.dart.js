@@ -67305,7 +67305,7 @@ n=k.gc3().eZ($.aq5(),j)
 j=A.ab(b).as.b
 m=A.ao(13,j.gl(j)>>>16&255,j.gl(j)>>>8&255,j.gl(j)&255)
 l=A.ao(38,j.gl(j)>>>16&255,j.gl(j)>>>8&255,j.gl(j)&255)
-return A.ak6(new A.vi(2,new A.hg(new A.a7l(k,A.b([B.H5,B.H4],t.vT),q,n,r,o,i,m,l,h,s,p),null),null),B.E8,null,"")},
+return A.ak6(new A.vi(2,new A.hg(new A.a7l(k,A.b([B.H5,B.H4],t.vT),q,n,r,o,i,m,l,h,s,p),null),null),B.E8,null,"TurnChecker")},
 Ha(a,b,c){var s
 if(b<c)--c
 s=J.bs(a)
