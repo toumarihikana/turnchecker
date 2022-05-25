@@ -259,81 +259,77 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
                   },
                 ),
               ),
-              body: SafeArea(
-                child: TabBarView(
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        ReorderableListView.builder(
-                          shrinkWrap: true,
-                          itemBuilder: (_, index) => CheckboxListTile(
-                            value: myCheckBoxModelList[index].isCheck,
-                            dense: true,
-                            controlAffinity: ListTileControlAffinity.leading,
-                            onChanged: (bool? val) {
-                              itemChange(myCheckBoxModelListProvider.notifier,
-                                  myCheckBoxModelList[index].id);
-                            },
-                            key: Key('$index' 'main'),
-                            tileColor:
-                                index.isOdd ? oddItemColor : evenItemColor,
-                            title: Text(myCheckBoxModelList[index].cardName),
-                          ),
-                          itemCount: myCheckBoxModelList.length,
-                          onReorder: (int oldIndex, int newIndex) {
-                            _onReorder(myCheckBoxModelList, oldIndex, newIndex);
+              body: TabBarView(
+                children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      ReorderableListView.builder(
+                        shrinkWrap: true,
+                        itemBuilder: (_, index) => CheckboxListTile(
+                          value: myCheckBoxModelList[index].isCheck,
+                          dense: true,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          onChanged: (bool? val) {
+                            itemChange(myCheckBoxModelListProvider.notifier,
+                                myCheckBoxModelList[index].id);
                           },
+                          key: Key('$index' 'main'),
+                          tileColor: index.isOdd ? oddItemColor : evenItemColor,
+                          title: Text(myCheckBoxModelList[index].cardName),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            resetCheckBox(myCheckBoxModelListProvider.notifier);
+                        itemCount: myCheckBoxModelList.length,
+                        onReorder: (int oldIndex, int newIndex) {
+                          _onReorder(myCheckBoxModelList, oldIndex, newIndex);
+                        },
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          resetCheckBox(myCheckBoxModelListProvider.notifier);
+                        },
+                        child: const Text(
+                          'Reset',
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      ReorderableListView.builder(
+                        shrinkWrap: true,
+                        itemBuilder: (_, index) => CheckboxListTile(
+                          value: opponentCheckBoxModelList[index].isCheck,
+                          dense: true,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          onChanged: (bool? val) {
+                            itemChange(
+                                opponentCheckBoxModelListProvider.notifier,
+                                opponentCheckBoxModelList[index].id);
                           },
-                          child: const Text(
-                            'Reset',
-                          ),
+                          key: Key('$index'),
+                          tileColor: index.isOdd ? oddItemColor : evenItemColor,
+                          title:
+                              Text(opponentCheckBoxModelList[index].cardName),
                         ),
-                      ],
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        ReorderableListView.builder(
-                          shrinkWrap: true,
-                          itemBuilder: (_, index) => CheckboxListTile(
-                            value: opponentCheckBoxModelList[index].isCheck,
-                            dense: true,
-                            controlAffinity: ListTileControlAffinity.leading,
-                            onChanged: (bool? val) {
-                              itemChange(
-                                  opponentCheckBoxModelListProvider.notifier,
-                                  opponentCheckBoxModelList[index].id);
-                            },
-                            key: Key('$index'),
-                            tileColor:
-                                index.isOdd ? oddItemColor : evenItemColor,
-                            title:
-                                Text(opponentCheckBoxModelList[index].cardName),
-                          ),
-                          itemCount: opponentCheckBoxModelList.length,
-                          onReorder: (int oldIndex, int newIndex) {
-                            _onReorder(
-                                opponentCheckBoxModelList, oldIndex, newIndex);
-                          },
+                        itemCount: opponentCheckBoxModelList.length,
+                        onReorder: (int oldIndex, int newIndex) {
+                          _onReorder(
+                              opponentCheckBoxModelList, oldIndex, newIndex);
+                        },
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          resetCheckBox(
+                              opponentCheckBoxModelListProvider.notifier);
+                        },
+                        child: const Text(
+                          'Reset',
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            resetCheckBox(
-                                opponentCheckBoxModelListProvider.notifier);
-                          },
-                          child: const Text(
-                            'Reset',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.endDocked,
