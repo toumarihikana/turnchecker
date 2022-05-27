@@ -92,7 +92,7 @@ class _CheckListPageState extends ConsumerState<CheckListPage> {
                 ),
               ),
               floatingActionButtonLocation:
-                  FloatingActionButtonLocation.endDocked,
+                  FloatingActionButtonLocation.endFloat,
               floatingActionButton: floatingButtonBuild(),
               bottomNavigationBar:
                   BottomActionBarWidget(nowDisplayProfileProvider),

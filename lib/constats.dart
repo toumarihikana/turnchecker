@@ -3,6 +3,7 @@ import 'save_profile_list_model.dart';
 const String dbCollectionNameChecklists = 'checklists';
 
 const String dbDocNameChecklists = 'profiles';
+const String jsonKeyProfiles = 'Profiles';
 
 class Ooooo {
   static List<CardData> getUsers() {
