@@ -1,46 +1,15 @@
-import 'package:ulid/ulid.dart';
+// import 'profile_model.dart';
 
-class SaveCheckListModel {
-  List<Profile>? profiles;
+// import 'package:freezed_annotation/freezed_annotation.dart';
 
-  SaveCheckListModel({this.profiles});
+// part 'save_check_list_model.freezed.dart';
+// part 'save_check_list_model.g.dart';
 
-  SaveCheckListModel.fromJson(Map<String, dynamic> json) {
-    if (json['profiles'] != null) {
-      profiles = <Profile>[];
-      json['profiles'].forEach((v) {
-        profiles!.add(Profile.fromJson(v));
-      });
-    }
-  }
+// @freezed
+// class SaveCheckListModel with _$SaveCheckListModel {
+//   factory SaveCheckListModel({required List<Profile> profiles}) =
+//       _SaveCheckList;
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (profiles != null) {
-      data['profiles'] = profiles!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
-
-class Profile {
-  String? name;
-  List<String>? cards;
-  String ulid = Ulid().toString();
-
-  Profile({this.name, this.cards, required this.ulid});
-
-  Profile.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    cards = json['cards'].cast<String>();
-    ulid = json['ulid'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['name'] = name;
-    data['cards'] = cards;
-    data['ulid'] = ulid;
-    return data;
-  }
-}
+//   factory SaveCheckListModel.fromJson(Map<String, dynamic> json) =>
+//       _$SaveCheckListModelFromJson(json);
+// }

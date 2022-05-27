@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:localstore/localstore.dart';
-import 'card_check_model.dart';
-import 'check_list_page.dart';
-import 'save_check_list_model.dart';
+import 'constats.dart';
+import 'profile_provider.dart';
+import 'save_profile_list_model.dart';
 
 class ProfilesSelectDialog extends ConsumerStatefulWidget {
-  const ProfilesSelectDialog(
-      {Key? key, required this.profiles, required this.tabIndex})
+  const ProfilesSelectDialog({Key? key, required this.profiles})
       : super(key: key);
 
   final List<Profile> profiles;
-  final int tabIndex;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -40,11 +38,14 @@ class _ProfilesSelectDialogState extends ConsumerState<ProfilesSelectDialog> {
                   }));
 
                   final db = Localstore.instance;
-                  SaveCheckListModel saved = SaveCheckListModel();
-                  saved.profiles = widget.profiles;
+                  SaveProfileListModel saved =
+                      SaveProfileListModel(profiles: widget.profiles);
                   var result = saved.toJson();
 
-                  db.collection('checklists').doc('profiles').set(result);
+                  db
+                      .collection('checklists')
+                      .doc(dbDocNameChecklists)
+                      .set(result);
                 },
                 children: <Widget>[
                   for (int i = 0; i < widget.profiles.length; i++)
@@ -52,59 +53,36 @@ class _ProfilesSelectDialogState extends ConsumerState<ProfilesSelectDialog> {
                         key: Key('${i}profiles'),
                         child: InkWell(
                           onTap: (() async {
-                            if (widget.tabIndex == 1) {
-                              final db = Localstore.instance;
-                              final id =
-                                  await db.collection('checklists').get();
-                              SaveCheckListModel saved = SaveCheckListModel();
-                              if (id != null) {
-                                if (id['profiles'] != null) {
-                                  saved = SaveCheckListModel.fromJson(
-                                      id['profiles']);
-                                  var select = saved.profiles![i];
-                                  List<String> cardsName = select.cards ?? [];
-                                  changeNowViewList(
-                                      opponentCheckBoxModelListProvider
-                                          .notifier,
-                                      cardsName);
+                            var targetProvider = nowDisplayProfileProvider;
+
+                            final db = Localstore.instance;
+                            final id = await db
+                                .collection(dbCollectionNameChecklists)
+                                .get();
+                            if (id != null) {
+                              if (id[dbDocNameChecklists] != null) {
+                                SaveProfileListModel saved =
+                                    SaveProfileListModel.fromJson(
+                                        id[dbDocNameChecklists]);
+                                ref
+                                    .watch(targetProvider.notifier)
+                                    .changeProfile(saved.profiles![i]);
+
+                                if (targetProvider ==
+                                    myDisplayProfileProvider) {
                                   ref
-                                      .read(
-                                          opponentProfileNameProvider.notifier)
-                                      .changeProfileName(select.name!);
+                                      .watch(myDisplayProfileProvider.notifier)
+                                      .changeProfile(saved.profiles![i]);
+                                } else if (targetProvider ==
+                                    opponentDisplayProfileProvider) {
                                   ref
-                                      .read(viewNowProfileNameProvider.notifier)
-                                      .changeProfileName(select.name!);
-                                  ref
-                                      .read(viewNowProfileUlidProvider.notifier)
-                                      .changeUlid(select.ulid);
-                                }
-                              }
-                            } else {
-                              final db = Localstore.instance;
-                              final id =
-                                  await db.collection('checklists').get();
-                              SaveCheckListModel saved = SaveCheckListModel();
-                              if (id != null) {
-                                if (id['profiles'] != null) {
-                                  saved = SaveCheckListModel.fromJson(
-                                      id['profiles']);
-                                  var select = saved.profiles![i];
-                                  List<String> cardsName = select.cards ?? [];
-                                  changeNowViewList(
-                                      myCheckBoxModelListProvider.notifier,
-                                      cardsName);
-                                  ref
-                                      .read(myProfileNameProvider.notifier)
-                                      .changeProfileName(select.name!);
-                                  ref
-                                      .read(viewNowProfileNameProvider.notifier)
-                                      .changeProfileName(select.name!);
-                                  ref
-                                      .read(viewNowProfileUlidProvider.notifier)
-                                      .changeUlid(select.ulid);
+                                      .watch(opponentDisplayProfileProvider
+                                          .notifier)
+                                      .changeProfile(saved.profiles![i]);
                                 }
                               }
                             }
+
                             if (!mounted) return;
                             Navigator.pop(context);
                           }),
@@ -117,13 +95,14 @@ class _ProfilesSelectDialogState extends ConsumerState<ProfilesSelectDialog> {
                                 }));
 
                                 final db = Localstore.instance;
-                                SaveCheckListModel saved = SaveCheckListModel();
-                                saved.profiles = widget.profiles;
+                                SaveProfileListModel saved =
+                                    SaveProfileListModel(
+                                        profiles: widget.profiles);
                                 var result = saved.toJson();
 
                                 db
                                     .collection('checklists')
-                                    .doc('profiles')
+                                    .doc(dbDocNameChecklists)
                                     .set(result);
                               },
                             ),
@@ -139,8 +118,8 @@ class _ProfilesSelectDialogState extends ConsumerState<ProfilesSelectDialog> {
   }
 
   void changeNowViewList(
-      AlwaysAliveProviderBase<AbstractCheckBoxModelListNotifier> notifier,
-      List<String> item) {
-    ref.read(notifier).changeList(CardCheckModel.fromStringList(item));
+      AlwaysAliveProviderBase<AbstractDisplayProfileNotifier> notifier,
+      Profile item) {
+    ref.read(notifier).changeProfile(item);
   }
 }

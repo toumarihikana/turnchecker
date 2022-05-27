@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:turnchecker/card_check_model.dart';
+import 'package:turnchecker/profile_provider.dart';
 
-import 'check_list_page.dart';
+import 'save_profile_list_model.dart';
 import 'text_edit_dialog.dart';
 
 class FloatingButtonWidgetBuild extends ConsumerWidget {
@@ -16,17 +16,12 @@ class FloatingButtonWidgetBuild extends ConsumerWidget {
     return FloatingActionButton(
       onPressed: () async {
         final cardName = await showEditDialog(context, "カード名");
-        if (DefaultTabController.of(context)?.index == 1) {
-          var items = ref.watch(opponentCheckBoxModelListProvider);
-          var newItem = CardCheckModel(
-              id: items.length + 1, cardName: cardName!, isCheck: false);
-          ref.read(opponentCheckBoxModelListProvider.notifier).addItem(newItem);
-        } else {
-          var items = ref.watch(myCheckBoxModelListProvider);
-          var newItem = CardCheckModel(
-              id: items.length + 1, cardName: cardName!, isCheck: false);
-          ref.read(myCheckBoxModelListProvider.notifier).addItem(newItem);
-        }
+        Profile targetProfile = ref.watch(nowDisplayProfileProvider);
+        var newItem = CardData(
+            id: targetProfile.cards!.length + 1,
+            cardName: cardName!,
+            isCheck: false);
+        ref.read(nowDisplayProfileProvider.notifier).addItem(newItem);
       },
       backgroundColor: Colors.green,
       mini: true,
