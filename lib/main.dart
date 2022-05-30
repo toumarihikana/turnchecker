@@ -43,7 +43,7 @@ class MyApp extends HookConsumerWidget {
           primarySwatch: Colors.orange,
         );
         return MaterialApp(
-          title: "kanban memo",
+          title: "Turn Checker",
           theme: themeData,
           darkTheme: ThemeData.dark(),
           // themeMode: themeModeValue,
