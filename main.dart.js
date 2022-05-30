@@ -65029,7 +65029,7 @@ $2(a,b){var s=null
 return A.tn(A.jB(A.f(a)+" \n Chrome plz!",s,s,s,s,s,s,s),s,s)},
 $S:407}
 A.Wx.prototype={
-$1(a){return new A.mv(B.Cj,"kanban memo",A.a33(null,B.CK),A.a33(B.Z,null),!1,null)},
+$1(a){return new A.mv(B.Cj,"Turn Checker",A.a33(null,B.CK),A.a33(B.Z,null),!1,null)},
 $S:408}
 A.iO.prototype={
 i(a){var s,r,q,p,o
