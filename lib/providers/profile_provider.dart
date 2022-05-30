@@ -54,6 +54,25 @@ class ProfileNotifier extends StateNotifier<Profile> {
         ulid: selectedProfile.ulid);
     state = newProfile;
   }
+
+  void changeChecks(List<bool> flags, int cardId) {
+    List<CardData> newCards = [
+      for (final card in state.cards)
+        if (card.id == cardId)
+          CardData(
+            id: card.id,
+            cardName: card.cardName,
+            isChecks: flags,
+          )
+        else
+          card
+    ];
+
+    Profile newProfile = Profile(
+        ulid: state.ulid, profileName: state.profileName, cards: newCards);
+
+    state = newProfile;
+  }
 }
 
 typedef ProfileProvider = StateNotifierProvider<ProfileNotifier, Profile>;

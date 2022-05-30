@@ -9,13 +9,18 @@ import '../providers/profile_provider.dart';
 
 class TabWrapWidget extends HookConsumerWidget {
   TabWrapWidget({Key? key}) : super(key: key);
-  final tabs = <Tab>[
-    const Tab(text: 'myself', icon: Icon(Icons.person)),
-    const Tab(text: 'opponent', icon: Icon(Icons.person_outline))
-  ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tabs = <Tab>[
+      const Tab(text: 'myself', icon: Icon(Icons.person)),
+      const Tab(text: 'opponent', icon: Icon(Icons.person_outline))
+    ];
+
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final Color tabColor = colorScheme.background;
+    final Color tabTextColor = colorScheme.onSurface;
+
     final controller = useTabController(initialLength: tabs.length);
 
     final myProfile = ref.watch(myProfileProvider);
@@ -31,10 +36,11 @@ class TabWrapWidget extends HookConsumerWidget {
     return Column(
       children: <Widget>[
         Ink(
-          color: Colors.blue,
+          color: tabColor,
           child: TabBar(
             controller: controller,
             tabs: tabs,
+            labelColor: tabTextColor,
           ),
         ),
         Expanded(

@@ -13,7 +13,7 @@ class MainPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('title'),
+        title: const Text('Turn Checker'),
       ),
       body: const SafeArea(
         child: MainContents(),

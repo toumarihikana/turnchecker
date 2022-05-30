@@ -21,9 +21,13 @@ class BottomBar extends HookConsumerWidget {
     var myProfileName = ref.watch(myProfileProvider).profileName;
     var opponentProfileName = ref.watch(opponentProfileProvider).profileName;
 
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final Color barColor = colorScheme.onSurface;
+    final Color profileNameColor = colorScheme.surface;
+
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
-      color: Colors.blue,
+      color: barColor,
       child: IconTheme(
         data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
         child: Row(
@@ -47,16 +51,16 @@ class BottomBar extends HookConsumerWidget {
             ),
             Text.rich(
               TextSpan(
-                text: (() {
-                  if (ref.watch(tabIndexProvider) == 0) {
-                    return myProfileName;
-                  } else if (ref.watch(tabIndexProvider) == 1) {
-                    return opponentProfileName;
-                  } else {
-                    return '';
-                  }
-                }()),
-              ),
+                  text: (() {
+                    if (ref.watch(tabIndexProvider) == 0) {
+                      return myProfileName;
+                    } else if (ref.watch(tabIndexProvider) == 1) {
+                      return opponentProfileName;
+                    } else {
+                      return '';
+                    }
+                  }()),
+                  style: TextStyle(color: profileNameColor)),
             ),
             IconButton(
               tooltip: 'save',

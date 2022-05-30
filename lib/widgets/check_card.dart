@@ -23,6 +23,9 @@ class CheckCard extends HookConsumerWidget {
     final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
     final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
 
+    // TODO Providerを両対応にする
+    var targetProfile = ref.watch(myProfileProvider);
+
     return Container(
       key: Key('$index main'),
       color: index.isOdd ? oddItemColor : evenItemColor,
@@ -48,7 +51,7 @@ class CheckCard extends HookConsumerWidget {
                 const SizedBox(
                   width: 20,
                 ),
-                checkBoxes(cardData.isChecks),
+                checkBoxes(ref, cardData.isChecks, index),
                 Flexible(
                   fit: FlexFit.loose,
                   child: Text(
@@ -73,21 +76,20 @@ class CheckCard extends HookConsumerWidget {
     );
   }
 
-  Widget checkBoxes(List<bool> flags) {
-    var flagState = useState(flags);
+  Widget checkBoxes(WidgetRef ref, List<bool> flags, int index) {
     return Row(
       children: <Widget>[
-        for (int i = 0; i < flagState.value.length; i++)
+        for (int i = 0; i < flags.length; i++)
           Checkbox(
             activeColor: Colors.blue,
-            value: flagState.value[i],
+            value: flags[i],
             onChanged: (flag) {
               var fs = [
-                for (int j = 0; j < flagState.value.length; j++)
-                  if (j == i) !flagState.value[j] else flagState.value[j],
+                for (int j = 0; j < flags.length; j++)
+                  if (j == i) !flags[j] else flags[j],
               ];
-              flagState.value = fs;
-              // toggle(flagState.value[0], flag);
+              flags = fs;
+              ref.watch(myProfileProvider.notifier).changeChecks(flags, index);
             },
           ),
       ],
