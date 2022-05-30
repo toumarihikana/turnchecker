@@ -85,7 +85,7 @@ class CheckCard extends HookConsumerWidget {
     if (ref.read(tabIndexProvider) == 0) {
       ref.watch(myProfileProvider.notifier).deleteCard(index);
     } else if (ref.read(tabIndexProvider) == 1) {
-      // TODO
+      ref.watch(opponentProfileProvider.notifier).deleteCard(index);
     }
   }
 

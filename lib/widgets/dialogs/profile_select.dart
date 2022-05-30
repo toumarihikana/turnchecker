@@ -41,6 +41,7 @@ class ShowProfilesDialog extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // TODO 並び替え、削除の即時UI反映
     var profileListState = useState(profileList);
 
     return AlertDialog(

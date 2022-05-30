@@ -10,7 +10,39 @@ import '../providers/tab_index_provider.dart';
 
 class SaveProfile {
   static void saveLogic(WidgetRef ref, Profile profile) async {
-    saveAsLogic(ref, profile, profile.profileName);
+    final db = Localstore.instance;
+    final id = await db.collection(dbCollectionNameChecklists).get();
+
+    Profile saveProfile = Profile(
+        profileName: profile.profileName,
+        cards: profile.cards,
+        ulid: profile.ulid);
+    ProfileList newSave;
+
+    if (id != null && id[dbDocNameChecklists] != null) {
+      ProfileList saved = ProfileList.fromJson(id[dbDocNameChecklists]);
+      List<Profile> newProfileList = [
+        for (final profile in saved.profiles)
+          if (profile.ulid != saveProfile.ulid) profile else saveProfile,
+      ];
+      newSave = ProfileList(profiles: newProfileList);
+
+      var result = newSave.toJson();
+
+      db
+          .collection(dbCollectionNameChecklists)
+          .doc(dbDocNameChecklists)
+          .set(result);
+
+      if (ref.read(tabIndexProvider) == 0) {
+        ref.read(myProfileProvider.notifier).changeProfile(saveProfile);
+      } else if (ref.read(tabIndexProvider) == 1) {
+        ref.read(opponentProfileProvider.notifier).changeProfile(saveProfile);
+      }
+    } else {
+      // 上書き保存なのでここには来ないはず。
+
+    }
   }
 
   static void saveAsLogic(
