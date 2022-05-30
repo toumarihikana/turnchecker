@@ -1,21 +1,20 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'card_check_model.dart';
+part of 'card_data.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_CardCheckModel _$$_CardCheckModelFromJson(Map<String, dynamic> json) =>
-    _$_CardCheckModel(
+CardData _$CardDataFromJson(Map<String, dynamic> json) => CardData(
       id: json['id'] as int,
       cardName: json['cardName'] as String,
-      isCheck: json['isCheck'] as bool,
+      isChecks:
+          (json['isChecks'] as List<dynamic>).map((e) => e as bool).toList(),
     );
 
-Map<String, dynamic> _$$_CardCheckModelToJson(_$_CardCheckModel instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$CardDataToJson(CardData instance) => <String, dynamic>{
       'id': instance.id,
       'cardName': instance.cardName,
-      'isCheck': instance.isCheck,
+      'isChecks': instance.isChecks,
     };
