@@ -23,8 +23,6 @@ class CheckCard extends HookConsumerWidget {
     final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
     final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
 
-    final flag = useState(false);
-
     return Container(
       key: Key('$index main'),
       color: index.isOdd ? oddItemColor : evenItemColor,
@@ -50,13 +48,7 @@ class CheckCard extends HookConsumerWidget {
                 const SizedBox(
                   width: 20,
                 ),
-                Checkbox(
-                  activeColor: Colors.blue,
-                  value: flag.value,
-                  onChanged: (i) {
-                    toggle(flag, i);
-                  },
-                ),
+                checkBoxes(cardData.isChecks),
                 Flexible(
                   fit: FlexFit.loose,
                   child: Text(
@@ -81,15 +73,32 @@ class CheckCard extends HookConsumerWidget {
     );
   }
 
+  Widget checkBoxes(List<bool> flags) {
+    var flagState = useState(flags);
+    return Row(
+      children: <Widget>[
+        for (int i = 0; i < flagState.value.length; i++)
+          Checkbox(
+            activeColor: Colors.blue,
+            value: flagState.value[i],
+            onChanged: (flag) {
+              var fs = [
+                for (int j = 0; j < flagState.value.length; j++)
+                  if (j == i) !flagState.value[j] else flagState.value[j],
+              ];
+              flagState.value = fs;
+              // toggle(flagState.value[0], flag);
+            },
+          ),
+      ],
+    );
+  }
+
   void deleteCard(WidgetRef ref, int index) {
     if (ref.read(tabIndexProvider) == 0) {
       ref.watch(myProfileProvider.notifier).deleteCard(index);
     } else if (ref.read(tabIndexProvider) == 1) {
       ref.watch(opponentProfileProvider.notifier).deleteCard(index);
     }
-  }
-
-  void toggle(ValueNotifier<bool> flag, bool? i) {
-    flag.value = i!;
   }
 }
