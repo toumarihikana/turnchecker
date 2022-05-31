@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:turnchecker/models/card_data.dart';
 
@@ -8,14 +7,13 @@ import '/widgets/check_card.dart';
 import '../providers/profile_provider.dart';
 
 class EachChecklist extends HookConsumerWidget {
-  const EachChecklist({required this.profile, Key? key}) : super(key: key);
-  final Profile profile;
+  const EachChecklist({required this.targetProvider, Key? key})
+      : super(key: key);
+  final ProfileProvider targetProvider;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var profileState = useState(profile);
-    // TODO Providerを両対応にする
-    ProfileProvider pp = myProfileProvider;
+    ProfileProvider pp = targetProvider;
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -23,10 +21,11 @@ class EachChecklist extends HookConsumerWidget {
             buildDefaultDragHandles: false,
             shrinkWrap: true,
             itemBuilder: (_, index) {
-              print('object$index');
+              // print('object$index');
               return CheckCard(
                 cardData: ref.watch(pp).cards[index],
                 index: index,
+                targetProvider: targetProvider,
                 key: ValueKey('$index main'),
               );
             },

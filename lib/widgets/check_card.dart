@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:turnchecker/models/card_data.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -7,24 +6,22 @@ import '../providers/profile_provider.dart';
 import '../providers/tab_index_provider.dart';
 
 class CheckCard extends HookConsumerWidget {
-  CheckCard({
+  const CheckCard({
     required this.key,
     required this.cardData,
     required this.index,
+    required this.targetProvider,
   }) : super(key: key);
   final CardData cardData;
   final int index;
+  final ProfileProvider targetProvider;
   final Key key;
-  // bool flag = false;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
     final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
-
-    // TODO Providerを両対応にする
-    var targetProfile = ref.watch(myProfileProvider);
 
     return Container(
       key: Key('$index main'),
@@ -89,7 +86,7 @@ class CheckCard extends HookConsumerWidget {
                   if (j == i) !flags[j] else flags[j],
               ];
               flags = fs;
-              ref.watch(myProfileProvider.notifier).changeChecks(flags, index);
+              ref.watch(targetProvider.notifier).changeChecks(flags, index);
             },
           ),
       ],

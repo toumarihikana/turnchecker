@@ -8,7 +8,7 @@ import 'each_checklist.dart';
 import '../providers/profile_provider.dart';
 
 class TabWrapWidget extends HookConsumerWidget {
-  TabWrapWidget({Key? key}) : super(key: key);
+  const TabWrapWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,8 +47,8 @@ class TabWrapWidget extends HookConsumerWidget {
           child: TabBarView(
             controller: controller,
             children: [
-              EachChecklist(profile: myProfile),
-              EachChecklist(profile: opponentProfile),
+              EachChecklist(targetProvider: myProfileProvider),
+              EachChecklist(targetProvider: opponentProfileProvider),
             ],
           ),
         ),
