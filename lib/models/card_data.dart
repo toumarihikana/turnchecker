@@ -25,20 +25,4 @@ class CardData {
       _$CardDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$CardDataToJson(this);
-
-  // CardData.fromJson(Map<String, dynamic> json)
-  //     : id = json['id'],
-  //       cardName = json['cardName'],
-  //       isChecks = json['isChecks'].cast<bool>();
-
-  // Map<String, dynamic> toJson() => {
-  //       'id': id,
-  //       'cardName': cardName,
-  //       'isChecks': isChecks,
-  //       //   final Map<String, dynamic> data = new Map<String, dynamic>();
-  //       //   data['id'] = this.id;
-  //       //   data['cardName'] = this.cardName;
-  //       //   data['isChecks'] = this.isChecks;
-  //       //   return data;
-  //     };
 }

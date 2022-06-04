@@ -23,9 +23,6 @@ class TabWrapWidget extends HookConsumerWidget {
 
     final controller = useTabController(initialLength: tabs.length);
 
-    final myProfile = ref.watch(myProfileProvider);
-    final opponentProfile = ref.watch(opponentProfileProvider);
-
     useEffectOnce(() {
       controller.addListener(() {
         changeTab(ref, controller.index);

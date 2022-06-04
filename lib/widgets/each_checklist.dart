@@ -42,7 +42,6 @@ class EachChecklist extends HookConsumerWidget {
               ref
                   .watch(pp.notifier)
                   .changeProfile(resetChecksProfile(ref.watch(pp)));
-              print(ref.watch(pp));
             },
             child: const Text(
               "Reset Button",

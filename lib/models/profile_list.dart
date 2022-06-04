@@ -23,16 +23,4 @@ class ProfileList {
       _$ProfileListFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProfileListToJson(this);
-
-  // ProfileList.fromJson(Map<String, dynamic> json)
-  //     : profiles = json['profiles'].cast<List<Profile>>();
-
-  // Map<String, dynamic> toJson() => {
-  //       'profiles': profiles,
-  //       // final Map<String, dynamic> data = new Map<String, dynamic>();
-  //       // if (this.profiles != null) {
-  //       //   data['profiles'] = this.profiles!.map((v) => v.toJson()).toList();
-  //       // }
-  //       // return data;
-  //     };
 }

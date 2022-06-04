@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:localstore/localstore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:turnchecker/logic/saveProfile.dart';
+import 'package:turnchecker/logic/save_profile.dart';
 
 import '../constants/constant.dart';
 import '../models/profile_list.dart';
@@ -21,9 +20,8 @@ class BottomBar extends HookConsumerWidget {
     var myProfileName = ref.watch(myProfileProvider).profileName;
     var opponentProfileName = ref.watch(opponentProfileProvider).profileName;
 
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final Color barColor = colorScheme.onSurface;
-    final Color profileNameColor = colorScheme.surface;
+    const Color barColor = Colors.black;
+    const Color profileNameColor = Colors.white;
 
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
@@ -60,7 +58,7 @@ class BottomBar extends HookConsumerWidget {
                       return '';
                     }
                   }()),
-                  style: TextStyle(color: profileNameColor)),
+                  style: const TextStyle(color: profileNameColor)),
             ),
             IconButton(
               tooltip: 'save',
